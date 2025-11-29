@@ -52,23 +52,17 @@ const HomePage = () => {
     {
       icon: Wrench,
       title: 'Expert Repairs',
-      description: 'Professional diagnosis and repair services for all vehicle issues',
-      duration: '2-4 hours',
-      price: 'From ₹2,000'
+      description: 'Professional diagnosis and repair services for all vehicle issues'
     },
     {
       icon: Paintbrush,
       title: 'Premium Painting & Dent Removal',
-      description: 'Flawless finish matching factory quality with advanced techniques',
-      duration: '1-3 days',
-      price: 'From ₹5,000'
+      description: 'Flawless finish matching factory quality with advanced techniques'
     },
     {
       icon: Settings,
       title: 'Mechanical Work',
-      description: 'Complete car care solutions for all your mechanical needs',
-      duration: '3-6 hours',
-      price: 'From ₹3,000'
+      description: 'Complete car care solutions for all your mechanical needs'
     }
   ];
 
@@ -184,32 +178,32 @@ const HomePage = () => {
                     <option value="">Choose a service</option>
                     {services.map((service, index) => (
                       <option key={index} value={service.title}>
-                        {service.title} - {service.price}
+                        {service.title}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="space-y-2">
                   <Label>Select Date *</Label>
-                  <div className="border border-border rounded-lg p-3 bg-card">
+                  <div className="border border-border rounded-lg p-4 bg-card">
                     <Calendar
                       mode="single"
                       selected={selectedDate}
                       onSelect={setSelectedDate}
                       disabled={(date) => date < new Date() || date.getDay() === 0}
-                      className="rounded-md"
+                      className="rounded-md mx-auto"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Select Time Slot *</Label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
                     {timeSlots.map((time) => (
                       <Button
                         key={time}
                         type="button"
                         variant={selectedTime === time ? 'default' : 'outline'}
-                        className="w-full"
+                        className="w-full h-12 text-sm font-medium transition-smooth"
                         onClick={() => setSelectedTime(time)}
                       >
                         {time}
@@ -309,25 +303,15 @@ const HomePage = () => {
               <Card key={index} className="shadow-elegant transition-smooth hover:shadow-glow border-border">
                 <CardContent className="p-6">
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-4">
-                      <service.icon className="w-7 h-7 text-accent" />
+                    <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                      <service.icon className="w-8 h-8 text-accent" />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-card-foreground">
+                    <h3 className="text-xl font-semibold mb-3 text-card-foreground">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       {service.description}
                     </p>
-                    <div className="flex items-center justify-between w-full mt-auto pt-4 border-t border-border">
-                      <div className="text-left">
-                        <p className="text-xs text-muted-foreground">Duration</p>
-                        <p className="text-sm font-medium text-foreground">{service.duration}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Price</p>
-                        <p className="text-sm font-semibold text-accent">{service.price}</p>
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
