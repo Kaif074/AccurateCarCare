@@ -1,31 +1,50 @@
-import { useState, useEffect } from 'react';
-import { MessageCircle, Wrench, Paintbrush, Settings, CheckCircle, MapPin, Phone, Clock, Star } from 'lucide-react';
+import { useState } from 'react';
+import { MessageCircle, Wrench, Paintbrush, Settings, CheckCircle, MapPin, Phone, Clock, Star, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Calendar } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const HomePage = () => {
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const { toast } = useToast();
 
   const galleryImages = [
     {
-      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/fb7d4a59-83b4-45f1-a682-5d7d4b4b491a.jpg',
-      title: 'Before & After',
-      description: 'Flawless dent removal and restoration'
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/0d88eedc-46ce-4df9-8eef-5dc8fe64935d.jpg',
+      title: 'Premium Vehicles',
+      description: 'Expert care for luxury and premium automobiles'
     },
     {
-      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/2a07d436-832a-4631-a77d-bfa30c485ec2.jpg',
-      title: 'Premium Painting',
-      description: 'Professional spray painting service'
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/a2da789c-1a9c-488e-8846-238555e756cb.jpg',
+      title: 'Interior Detailing',
+      description: 'Meticulous attention to every detail'
     },
     {
-      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/07affb09-b651-452d-9e07-d6a5e3ed4777.jpg',
-      title: 'Expert Repairs',
-      description: 'Skilled technicians at work'
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/1e5a073f-abfa-4871-978c-21248b45e40e.jpg',
+      title: 'Engine Care',
+      description: 'Professional mechanical services'
     },
     {
-      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/f836b92c-91f7-4603-b1d0-84dd4805a5a8.jpg',
-      title: 'Quality Results',
-      description: 'Satisfied customers every time'
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/ea38bd57-35eb-4353-974c-267ecde0c29c.jpg',
+      title: 'Expert Technicians',
+      description: 'Skilled professionals at your service'
+    },
+    {
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/c254f1ff-7a98-469c-979e-581199050ded.jpg',
+      title: 'Modern Facility',
+      description: 'State-of-the-art service center'
+    },
+    {
+      url: 'https://miaoda-site-img.s3cdn.medo.dev/images/bbc28f4e-e92c-410b-998f-20cdf023f6e7.jpg',
+      title: 'Detailing Services',
+      description: 'Professional cleaning and restoration'
     }
   ];
 
@@ -33,18 +52,29 @@ const HomePage = () => {
     {
       icon: Wrench,
       title: 'Expert Repairs',
-      description: 'Professional diagnosis and repair services for all vehicle issues'
+      description: 'Professional diagnosis and repair services for all vehicle issues',
+      duration: '2-4 hours',
+      price: 'From ₹2,000'
     },
     {
       icon: Paintbrush,
       title: 'Premium Painting & Dent Removal',
-      description: 'Flawless finish matching factory quality with advanced techniques'
+      description: 'Flawless finish matching factory quality with advanced techniques',
+      duration: '1-3 days',
+      price: 'From ₹5,000'
     },
     {
       icon: Settings,
       title: 'Mechanical Work',
-      description: 'Complete car care solutions for all your mechanical needs'
+      description: 'Complete car care solutions for all your mechanical needs',
+      duration: '3-6 hours',
+      price: 'From ₹3,000'
     }
+  ];
+
+  const timeSlots = [
+    '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+    '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'
   ];
 
   const usps = [
@@ -70,36 +100,207 @@ const HomePage = () => {
     }
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveImage((prev) => (prev + 1) % galleryImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
+  const handlePrevImage = () => {
+    setActiveImage((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setActiveImage((prev) => (prev + 1) % galleryImages.length);
+  };
+
+  const handleBookingSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name');
+    const phone = formData.get('phone');
+    const service = formData.get('service');
+
+    if (!selectedDate || !selectedTime) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please select both date and time for your appointment.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    toast({
+      title: 'Booking Request Received!',
+      description: `Thank you ${name}! We'll confirm your appointment for ${selectedDate.toLocaleDateString()} at ${selectedTime} shortly.`
+    });
+
+    setBookingOpen(false);
+    setSelectedDate(undefined);
+    setSelectedTime('');
+  };
 
   const handleWhatsAppClick = () => {
     window.open('https://wa.me/919845552372?text=Hi%2C%20I%20need%20a%20quotation%20for%20my%20car', '_blank');
   };
 
-  const handleLocationClick = () => {
-    window.open('https://maps.app.goo.gl/9YwJKcVu72xLdG4T8', '_blank');
-  };
-
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <section className="relative bg-primary text-primary-foreground py-12 px-4 xl:py-20">
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-3xl font-bold mb-3 xl:text-5xl xl:mb-4">
             Accurate Car Care
           </h1>
-          <p className="text-base opacity-95 max-w-2xl mx-auto leading-relaxed xl:text-xl">
+          <p className="text-base opacity-95 max-w-2xl mx-auto leading-relaxed mb-6 xl:text-xl xl:mb-8">
             Expert Car Care You Can Trust - Specializing in Tinkering, Painting & Mechanical Excellence
           </p>
+          <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow min-h-[48px]">
+                <CalendarIcon className="w-5 h-5 mr-2" />
+                Book Your Service Now
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Book Your Service</DialogTitle>
+                <DialogDescription>
+                  Select your preferred date, time, and service. We'll confirm your appointment shortly.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleBookingSubmit} className="space-y-6 mt-4">
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input id="name" name="name" placeholder="John Doe" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input id="phone" name="phone" type="tel" placeholder="+91 98455 52372" required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="service">Select Service *</Label>
+                  <select
+                    id="service"
+                    name="service"
+                    required
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground"
+                  >
+                    <option value="">Choose a service</option>
+                    {services.map((service, index) => (
+                      <option key={index} value={service.title}>
+                        {service.title} - {service.price}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Select Date *</Label>
+                  <div className="border border-border rounded-lg p-3 bg-card">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      disabled={(date) => date < new Date() || date.getDay() === 0}
+                      className="rounded-md"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Select Time Slot *</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {timeSlots.map((time) => (
+                      <Button
+                        key={time}
+                        type="button"
+                        variant={selectedTime === time ? 'default' : 'outline'}
+                        className="w-full"
+                        onClick={() => setSelectedTime(time)}
+                      >
+                        {time}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    rows={3}
+                    placeholder="Any specific requirements or concerns..."
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground"
+                  />
+                </div>
+                <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  Confirm Booking
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 
       <section className="py-8 px-4 xl:py-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
+            Our Gallery
+          </h2>
+          <div className="relative overflow-hidden rounded-xl shadow-elegant">
+            <div className="relative aspect-video bg-muted">
+              {galleryImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-700 ${
+                    index === activeImage ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <img
+                    src={image.url}
+                    alt={image.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/90 to-transparent p-4 xl:p-6">
+                    <h3 className="text-lg font-semibold text-primary-foreground mb-1">
+                      {image.title}
+                    </h3>
+                    <p className="text-sm text-primary-foreground/90">
+                      {image.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={handlePrevImage}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={handleNextImage}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 xl:bottom-24">
+              {galleryImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveImage(index)}
+                  className={`w-2 h-2 rounded-full transition-smooth ${
+                    index === activeImage ? 'bg-accent w-6' : 'bg-primary-foreground/50'
+                  }`}
+                  aria-label={`View image ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-8 px-4 bg-secondary/30 xl:py-16">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
             Our Services
           </h2>
@@ -114,9 +315,19 @@ const HomePage = () => {
                     <h3 className="text-lg font-semibold mb-2 text-card-foreground">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                       {service.description}
                     </p>
+                    <div className="flex items-center justify-between w-full mt-auto pt-4 border-t border-border">
+                      <div className="text-left">
+                        <p className="text-xs text-muted-foreground">Duration</p>
+                        <p className="text-sm font-medium text-foreground">{service.duration}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground">Price</p>
+                        <p className="text-sm font-semibold text-accent">{service.price}</p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -125,8 +336,8 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-8 px-4 bg-secondary/30 xl:py-16">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-8 px-4 xl:py-16">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
             Why Choose Us
           </h2>
@@ -154,87 +365,64 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="py-8 px-4 xl:py-16">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
-            Our Work
-          </h2>
-          <div className="relative overflow-hidden rounded-xl shadow-elegant">
-            <div className="relative aspect-video bg-muted">
-              {galleryImages.map((image, index) => (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    index === activeImage ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  <img
-                    src={image.url}
-                    alt={image.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/90 to-transparent p-4 xl:p-6">
-                    <h3 className="text-lg font-semibold text-primary-foreground mb-1">
-                      {image.title}
-                    </h3>
-                    <p className="text-sm text-primary-foreground/90">
-                      {image.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 flex gap-2 xl:bottom-24">
-              {galleryImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveImage(index)}
-                  className={`w-2 h-2 rounded-full transition-smooth ${
-                    index === activeImage ? 'bg-accent w-6' : 'bg-primary-foreground/50'
-                  }`}
-                  aria-label={`View image ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="py-8 px-4 bg-secondary/30 xl:py-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
-            Visit Us
+            Visit Our Location
           </h2>
-          <Card className="shadow-elegant border-border">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-card-foreground mb-1">Location</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Bus Stop, 27th Cross Rd, behind Yedur, 7th Block, Jayanagar, Bengaluru, Karnataka 560070
-                    </p>
-                    <Button
-                      onClick={handleLocationClick}
-                      variant="outline"
-                      size="sm"
-                      className="mt-3"
-                    >
-                      <MapPin className="w-4 h-4 mr-2" />
-                      Open in Google Maps
-                    </Button>
+          <Card className="shadow-elegant border-border overflow-hidden">
+            <CardContent className="p-0">
+              <div className="grid xl:grid-cols-2">
+                <div className="p-6 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-card-foreground mb-1">Address</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Bus Stop, 27th Cross Rd, behind Yedur,<br />
+                        7th Block, Jayanagar,<br />
+                        Bengaluru, Karnataka 560070
+                      </p>
+                    </div>
                   </div>
+                  <div className="flex items-start gap-3">
+                    <Phone className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-card-foreground mb-1">Contact</h3>
+                      <p className="text-sm text-muted-foreground">
+                        +91 98455 52372
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-card-foreground mb-1">Working Hours</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Monday - Saturday: 9:00 AM - 6:00 PM<br />
+                        Sunday: Closed
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleWhatsAppClick}
+                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground mt-4"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Chat on WhatsApp
+                  </Button>
                 </div>
-                <div className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-card-foreground mb-1">Contact</h3>
-                    <p className="text-sm text-muted-foreground">
-                      +91 98455 52372
-                    </p>
-                  </div>
+                <div className="h-80 xl:h-auto">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.9876543210123!2d77.5833333!3d12.9166667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzAwLjAiTiA3N8KwMzUnMDAuMCJF!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Accurate Car Care Location"
+                  />
                 </div>
               </div>
             </CardContent>
@@ -242,15 +430,23 @@ const HomePage = () => {
         </div>
       </section>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border shadow-elegant z-50">
-        <div className="max-w-6xl mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border shadow-elegant z-50 xl:hidden">
+        <div className="max-w-7xl mx-auto flex gap-2">
+          <Button
+            onClick={() => setBookingOpen(true)}
+            size="lg"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground min-h-[48px]"
+          >
+            <CalendarIcon className="w-5 h-5 mr-2" />
+            Book Service
+          </Button>
           <Button
             onClick={handleWhatsAppClick}
             size="lg"
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow transition-smooth min-h-[48px]"
+            className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground shadow-glow min-h-[48px]"
           >
             <MessageCircle className="w-5 h-5 mr-2" />
-            Get Your Free Quotation on WhatsApp Now
+            WhatsApp
           </Button>
         </div>
       </div>
