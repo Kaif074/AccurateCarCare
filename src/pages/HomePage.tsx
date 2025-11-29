@@ -192,6 +192,9 @@ const HomePage = () => {
                       onSelect={setSelectedDate}
                       disabled={(date) => date < new Date() || date.getDay() === 0}
                       className="rounded-md mx-auto"
+                      fromDate={new Date()}
+                      toDate={new Date(new Date().setMonth(new Date().getMonth() + 6))}
+                      numberOfMonths={1}
                     />
                   </div>
                 </div>
