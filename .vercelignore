@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Documentation
+*.md
+!README.md
+docs/
+examples/
+
+# Development files
+.rules/
+history/
+*.log
+*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build artifacts (will be regenerated)
+dist/
+build/
+
+# Environment files (use Vercel dashboard for env vars)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# Misc
+.DS_Store
+Thumbs.db

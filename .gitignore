@@ -14,10 +14,6 @@ output
 *.local
 package-lock.json
 
-# Environment files
-.env
-.env.*
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -31,3 +27,7 @@ package-lock.json
 .sync
 history/*.json
 .vite_cache
+ 
+# Environment files
+.env
+.env.*

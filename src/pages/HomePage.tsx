@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, Wrench, Paintbrush, Settings, CheckCircle, MapPin, Phone, Clock, Star, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MessageCircle, Wrench, Paintbrush, Settings, CheckCircle, MapPin, Phone, Clock, Star, Calendar as CalendarIcon, ChevronLeft, ChevronRight, Zap, Hammer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -50,19 +50,44 @@ const HomePage = () => {
 
   const services = [
     {
-      icon: Wrench,
-      title: 'Expert Repairs',
-      description: 'Professional diagnosis and repair services for all vehicle issues'
-    },
-    {
+      id: 'SVC-PAINT-001',
       icon: Paintbrush,
-      title: 'Premium Painting & Dent Removal',
-      description: 'Flawless finish matching factory quality with advanced techniques'
+      title: 'Painting',
+      description: 'Professional automotive painting with factory-quality finish',
+      priceRange: 'From ₹5,000',
+      estimatedTime: '2-7 days'
     },
     {
+      id: 'SVC-TINK-002',
+      icon: Wrench,
+      title: 'Tinkering',
+      description: 'General automotive repair and maintenance services',
+      priceRange: 'From ₹1,500',
+      estimatedTime: '2-48 hours'
+    },
+    {
+      id: 'SVC-PLWELD-003',
+      icon: Zap,
+      title: 'Plastic Welding',
+      description: 'Specialized plastic welding for bumpers and interior panels',
+      priceRange: 'From ₹800',
+      estimatedTime: '2-48 hours'
+    },
+    {
+      id: 'SVC-DENT-004',
+      icon: Hammer,
+      title: 'Dent Removal',
+      description: 'Expert dent removal using PDR and traditional methods',
+      priceRange: 'From ₹500',
+      estimatedTime: '1-5 hours'
+    },
+    {
+      id: 'SVC-MECH-005',
       icon: Settings,
       title: 'Mechanical Work',
-      description: 'Complete car care solutions for all your mechanical needs'
+      description: 'Complete mechanical services from engine repairs to brake service',
+      priceRange: 'From ₹800',
+      estimatedTime: '1-5 days'
     }
   ];
 
@@ -105,9 +130,10 @@ const HomePage = () => {
   const handleBookingSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const name = formData.get('name');
-    const phone = formData.get('phone');
-    const service = formData.get('service');
+    const name = formData.get('name') as string;
+    const phone = formData.get('phone') as string;
+    const serviceValue = formData.get('service') as string;
+    const notes = formData.get('notes') as string || 'None';
 
     if (!selectedDate || !selectedTime) {
       toast({
@@ -118,12 +144,46 @@ const HomePage = () => {
       return;
     }
 
+    const selectedService = services.find(s => s.title === serviceValue);
+    const serviceCode = selectedService?.id || '';
+
+    const formattedDate = selectedDate.toLocaleDateString('en-IN', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const message = `🚗 *SERVICE BOOKING REQUEST*
+
+*Customer Details:*
+Name: ${name}
+Phone: ${phone}
+
+*Service Details:*
+Service: ${serviceValue}
+Service Code: ${serviceCode}
+Date: ${formattedDate}
+Time: ${selectedTime}
+
+*Additional Notes:*
+${notes}
+
+---
+Please confirm availability and provide a quote for this service.`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/919845552372?text=${encodedMessage}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
     toast({
-      title: 'Booking Request Received!',
-      description: `Thank you ${name}! We'll confirm your appointment for ${selectedDate.toLocaleDateString()} at ${selectedTime} shortly.`
+      title: 'Opening WhatsApp',
+      description: 'Your booking details are ready to send!'
     });
 
     setBookingOpen(false);
+    e.currentTarget.reset();
     setSelectedDate(undefined);
     setSelectedTime('');
   };
@@ -225,7 +285,8 @@ const HomePage = () => {
                   />
                 </div>
                 <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
-                  Confirm Booking
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Send Booking via WhatsApp
                 </Button>
               </form>
             </DialogContent>
@@ -301,7 +362,7 @@ const HomePage = () => {
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground xl:text-3xl xl:mb-10">
             Our Services
           </h2>
-          <div className="grid gap-4 xl:grid-cols-3 xl:gap-6">
+          <div className="grid gap-4 xl:grid-cols-5 xl:gap-6">
             {services.map((service, index) => (
               <Card key={index} className="shadow-elegant transition-smooth hover:shadow-glow border-border">
                 <CardContent className="p-6">
@@ -309,12 +370,21 @@ const HomePage = () => {
                     <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-4">
                       <service.icon className="w-8 h-8 text-accent" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-3 text-card-foreground">
+                    <h3 className="text-xl font-semibold mb-2 text-card-foreground">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                       {service.description}
                     </p>
+                    <div className="mt-auto pt-4 border-t border-border w-full space-y-2">
+                      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                        <span className="font-semibold text-accent">{service.priceRange}</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        <span>{service.estimatedTime}</span>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -358,59 +428,45 @@ const HomePage = () => {
             Visit Our Location
           </h2>
           <Card className="shadow-elegant border-border overflow-hidden">
-            <CardContent className="p-0">
-              <div className="grid xl:grid-cols-2">
-                <div className="p-6 space-y-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-card-foreground mb-1">Address</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        Bus Stop, 27th Cross Rd, behind Yedur,<br />
-                        7th Block, Jayanagar,<br />
-                        Bengaluru, Karnataka 560070
-                      </p>
-                    </div>
+            <CardContent className="p-6">
+              <div className="space-y-6 max-w-2xl mx-auto">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-card-foreground mb-1">Address</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Bus Stop, 27th Cross Rd, behind Yedur,<br />
+                      7th Block, Jayanagar,<br />
+                      Bengaluru, Karnataka 560070
+                    </p>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-card-foreground mb-1">Contact</h3>
-                      <p className="text-sm text-muted-foreground">
-                        +91 98455 52372
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
-                    <div>
-                      <h3 className="font-semibold text-card-foreground mb-1">Working Hours</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Monday - Saturday: 9:00 AM - 6:00 PM<br />
-                        Sunday: Closed
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleWhatsAppClick}
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground mt-4"
-                  >
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Chat on WhatsApp
-                  </Button>
                 </div>
-                <div className="h-80 xl:h-auto">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.9876543210123!2d77.5833333!3d12.9166667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTLCsDU1JzAwLjAiTiA3N8KwMzUnMDAuMCJF!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Accurate Car Care Location"
-                  />
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-card-foreground mb-1">Contact</h3>
+                    <p className="text-sm text-muted-foreground">
+                      +91 98455 52372
+                    </p>
+                  </div>
                 </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-accent flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-card-foreground mb-1">Working Hours</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Monday - Saturday: 9:00 AM - 6:00 PM<br />
+                      Sunday: Closed
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleWhatsAppClick}
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Chat on WhatsApp
+                </Button>
               </div>
             </CardContent>
           </Card>
