@@ -176,14 +176,9 @@ This document outlines the complete service catalog for Accurate Car Care, inclu
 
 ---
 
-## Pricing Summary Table
+## Pricing Summary
 
-| Service | Code | Pricing Model | Starting Price | Avg. Time |
-|---------|------|---------------|----------------|-----------|
-| Painting | SVC-PAINT-001 | Quote-based | ₹5,000 | 3-4 days |
-| Tinkering | SVC-TINK-002 | Hourly + Parts | ₹1,500 | 4-6 hours |
-| Plastic Welding | SVC-PLWELD-003 | Per Repair | ₹800 | 2-3 hours |
-| Dent Removal | SVC-DENT-004 | Per Dent | ₹500 | 1-2 hours |
+Pricing and duration indicators are no longer displayed in service listings. Quotes and timelines are communicated during booking and assessment.
 
 ---
 
@@ -193,25 +188,15 @@ This document outlines the complete service catalog for Accurate Car Care, inclu
 
 ```typescript
 interface Service {
-  id: string;                    // Unique identifier
-  code: string;                  // Service code (e.g., SVC-PAINT-001)
-  title: string;                 // Display name
-  description: string;           // Customer-facing description
-  icon: LucideIcon;             // Icon component
-  category: string;              // Service category
-  pricingModel: string;          // Pricing type
-  priceRange: {
-    min: number;
-    max: number;
-    currency: string;
-  };
-  estimatedTime: {
-    min: string;
-    max: string;
-    unit: string;
-  };
-  prerequisites: string[];       // Required conditions
-  details: string[];             // Service details
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  category: string;
+  pricingModel: string;
+  prerequisites: string[];
+  details: string[];
 }
 ```
 
@@ -227,8 +212,6 @@ const services = [
     icon: Paintbrush,
     category: 'Body Work & Restoration',
     pricingModel: 'Quote-based',
-    priceRange: { min: 5000, max: 25000, currency: '₹' },
-    estimatedTime: { min: '2', max: '7', unit: 'days' },
     prerequisites: ['Vehicle inspection required', 'May require dent removal first'],
     details: [
       'Color matching with original paint',
@@ -245,8 +228,6 @@ const services = [
     icon: Wrench,
     category: 'Mechanical & Repair',
     pricingModel: 'Hourly + Parts',
-    priceRange: { min: 1500, max: 10000, currency: '₹' },
-    estimatedTime: { min: '2', max: '48', unit: 'hours' },
     prerequisites: ['Free diagnostic assessment', 'Approval for repairs > ₹5,000'],
     details: [
       'Comprehensive vehicle inspection',
@@ -263,8 +244,6 @@ const services = [
     icon: Zap,
     category: 'Body Work & Restoration',
     pricingModel: 'Per Repair',
-    priceRange: { min: 800, max: 6000, currency: '₹' },
-    estimatedTime: { min: '2', max: '48', unit: 'hours' },
     prerequisites: ['Physical inspection required', 'Weldability assessment'],
     details: [
       'Plastic type identification',
@@ -281,8 +260,6 @@ const services = [
     icon: Hammer,
     category: 'Body Work & Restoration',
     pricingModel: 'Per Dent',
-    priceRange: { min: 500, max: 8000, currency: '₹' },
-    estimatedTime: { min: '1', max: '5', unit: 'hours/days' },
     prerequisites: ['Visual inspection', 'Paint condition assessment'],
     details: [
       'Paintless Dent Repair (PDR)',
@@ -302,10 +279,10 @@ const services = [
 
 ```
 Choose a service:
-├─ Painting (₹5,000+)
-├─ Tinkering (₹1,500+)
-├─ Plastic Welding (₹800+)
-└─ Dent Removal (₹500+)
+├─ Painting
+├─ Tinkering
+├─ Plastic Welding
+└─ Dent Removal
 ```
 
 ### WhatsApp Message Format
@@ -342,8 +319,6 @@ Each service will be displayed as a card with:
 - Service icon
 - Service title
 - Brief description
-- Starting price indicator
-- Estimated time range
 
 Example:
 ```
@@ -355,7 +330,7 @@ Example:
 │  painting with factory-     │
 │  quality finish             │
 │                             │
-│  From ₹5,000 | 2-7 days     │
+│                             │
 └─────────────────────────────┘
 ```
 
@@ -383,7 +358,7 @@ For each service completion:
 
 ---
 
-## Pricing Transparency
+## Booking & Quotes
 
 ### Quote Process
 
@@ -394,14 +369,7 @@ For each service completion:
 5. **Service**: Work begins after approval
 6. **Completion**: Final inspection and delivery
 
-### Price Factors
-
-Prices vary based on:
-- Vehicle make and model
-- Extent of damage/work required
-- Parts and materials needed
-- Complexity of repair
-- Time required
+Quotes vary based on assessment factors including vehicle model, damage extent, materials, and repair complexity.
 
 ---
 
@@ -415,8 +383,7 @@ Prices vary based on:
 - ✅ Update WhatsApp message template
 - ✅ Update service display cards
 - ✅ Test service selection flow
-- ✅ Verify pricing display
-- ✅ Validate time estimates
+ 
 
 ---
 
@@ -424,10 +391,10 @@ Prices vary based on:
 
 The service catalog has been expanded to include four specialized services:
 
-1. **Painting** - Professional automotive painting (₹5,000+, 2-7 days)
-2. **Tinkering** - General repairs and maintenance (₹1,500+, 2-48 hours)
-3. **Plastic Welding** - Bumper and panel repair (₹800+, 2-48 hours)
-4. **Dent Removal** - PDR and body work (₹500+, 1-5 hours/days)
+1. **Painting** - Professional automotive painting
+2. **Tinkering** - General repairs and maintenance
+3. **Plastic Welding** - Bumper and panel repair
+4. **Dent Removal** - PDR and body work
 
 Each service includes:
 - Unique identifier and code

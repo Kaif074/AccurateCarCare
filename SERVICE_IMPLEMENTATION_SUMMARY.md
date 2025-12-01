@@ -136,33 +136,25 @@ const services = [
     id: 'SVC-PAINT-001',
     icon: Paintbrush,
     title: 'Painting',
-    description: 'Professional automotive painting with factory-quality finish',
-    priceRange: 'From ₹5,000',
-    estimatedTime: '2-7 days'
+    description: 'Professional automotive painting with factory-quality finish'
   },
   {
     id: 'SVC-TINK-002',
     icon: Wrench,
     title: 'Tinkering',
-    description: 'General automotive repair and maintenance services',
-    priceRange: 'From ₹1,500',
-    estimatedTime: '2-48 hours'
+    description: 'General automotive repair and maintenance services'
   },
   {
     id: 'SVC-PLWELD-003',
     icon: Zap,
     title: 'Plastic Welding',
-    description: 'Specialized plastic welding for bumpers and interior panels',
-    priceRange: 'From ₹800',
-    estimatedTime: '2-48 hours'
+    description: 'Specialized plastic welding for bumpers and interior panels'
   },
   {
     id: 'SVC-DENT-004',
     icon: Hammer,
     title: 'Dent Removal',
-    description: 'Expert dent removal using PDR and traditional methods',
-    priceRange: 'From ₹500',
-    estimatedTime: '1-5 hours'
+    description: 'Expert dent removal using PDR and traditional methods'
   }
 ];
 ```
@@ -177,8 +169,6 @@ Each service is now displayed with:
 - ✅ Unique icon (Paintbrush, Wrench, Zap, Hammer)
 - ✅ Service title
 - ✅ Detailed description
-- ✅ Starting price indicator
-- ✅ Estimated completion time
 - ✅ Hover effects and animations
 
 **Layout:**
@@ -196,8 +186,6 @@ Each service is now displayed with:
 │  quality finish             │
 │                             │
 │  ─────────────────────────  │
-│  From ₹5,000                │
-│  ⏱ 2-7 days                 │
 └─────────────────────────────┘
 ```
 
@@ -211,10 +199,10 @@ All four services are now available in the booking form dropdown:
 
 ```
 Choose a service:
-├─ Painting (From ₹5,000)
-├─ Tinkering (From ₹1,500)
-├─ Plastic Welding (From ₹800)
-└─ Dent Removal (From ₹500)
+├─ Painting
+├─ Tinkering
+├─ Plastic Welding
+└─ Dent Removal
 ```
 
 ### WhatsApp Message Format
@@ -295,14 +283,9 @@ Painting
 
 ---
 
-## 💰 Pricing Summary
+## 💬 Quotes
 
-| Service | Code | Starting Price | Max Price | Avg. Time |
-|---------|------|----------------|-----------|-----------|
-| **Painting** | SVC-PAINT-001 | ₹5,000 | ₹25,000 | 3-4 days |
-| **Tinkering** | SVC-TINK-002 | ₹1,500 | ₹10,000+ | 4-6 hours |
-| **Plastic Welding** | SVC-PLWELD-003 | ₹800 | ₹6,000 | 2-3 hours |
-| **Dent Removal** | SVC-DENT-004 | ₹500 | ₹8,000 | 1-2 hours |
+Quotes and estimated timelines are communicated during booking and assessment.
 
 ---
 
@@ -330,8 +313,6 @@ Painting
 
 ### User Experience
 - ✅ Visual service cards with icons
-- ✅ Price transparency (starting prices displayed)
-- ✅ Time estimates visible
 - ✅ Easy service selection in booking form
 - ✅ Service code included in WhatsApp messages
 - ✅ Professional presentation
